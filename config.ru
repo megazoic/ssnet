@@ -1,3 +1,5 @@
 # config.ru
 require './ssnet'
-run Post.new
+#need this otherwise the edit form _method doesn't work
+use Rack::MethodOverride
+run BlogMaker::BLOG.new
