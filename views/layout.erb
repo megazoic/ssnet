@@ -18,7 +18,7 @@
       .container {
         max-width:1000px;
       }
-      li.auth_user {
+      li .auth_user, div .auth_user {
         display: none;
       }
     </style>
@@ -71,6 +71,7 @@
     var auth_user = <%= @au_visible %>;
     if (auth_user){
      $("li.auth_user").show();
+     $("div.auth_user").show();
     }
     
     <!-- Title, body can not be blank -->

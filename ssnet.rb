@@ -74,6 +74,7 @@ module BlogMaker
       puts params.inspect
       new_post = params[:post]
       new_post["created_at"] = Time.now.to_s
+      new_post["au_id"] = session[:auth_user_id]
       puts new_post.inspect
      @post = Post.new(new_post)
      #@post.valid?
@@ -91,6 +92,9 @@ module BlogMaker
     end
     # edit post
     get "/posts/:id/edit" do
+      if session[:auth_user_id].nil?
+        redirect '/login'
+      end
       @post = Post[params[:id].to_i]
       @title = "Edit Form"
       erb :"posts/edit"
