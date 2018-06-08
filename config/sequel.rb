@@ -2,4 +2,5 @@ require 'sequel'
 #for remote use Heroku
 #DB = Sequel.connect(ENV['DATABASE_URL'])
 #for local use
-DB = Sequel.connect('postgres://dev_ssnet:2BsafeTE@localhost:5432/ssnet')
+db_conn_url = File.open("./db/db_conn_url.txt", "r"){ |file| file.read }
+DB = Sequel.connect(db_conn_url)
