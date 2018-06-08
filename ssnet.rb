@@ -9,12 +9,14 @@ require 'sinatra/redirect_with_flash'
 
 require './auth_user'
 require './post'
+require './edit_history'
 
 module BlogMaker
   class BLOG < Sinatra::Base
-    def initialize(post: Post.new, auth_user: Auth_user.new)
+    def initialize(post: Post.new, auth_user: Auth_user.new, edit_history: Edit_history.new)
       @auth_user = auth_user
       @post = post
+      @edit_history = edit_history
       @au_visible = false
       super()
     end
@@ -100,12 +102,22 @@ module BlogMaker
       erb :"posts/edit"
     end
     put "/posts/:id" do
+      edit_time = Time.now
       updated_post = params[:post]
-      updated_post["updated_at"] = Time.now
+      updated_post["updated_at"] = edit_time
+      edit_history = Hash.new
+      edit_history["created_at"] = edit_time
+      edit_history["post"] = params[:id]
+      edit_history["au_id"] = session[:auth_user_id]
+      @edit_history = Edit_history.new(edit_history)
       @post = Post[params[:id].to_i]
-      @post.update(updated_post)
-      #@post.valid?
-      redirect "/posts/#{@post.id}"
+      if @post.valid? && @edit_history.valid?
+        @post.update(updated_post)
+        @edit_history.save
+        redirect "/posts/#{@post.id}"
+      else
+        redirect "/post/#{params[:id]}/edit", :error => 'Something went wrong. Try again'
+      end
     end
     helpers do
       include Rack::Utils
